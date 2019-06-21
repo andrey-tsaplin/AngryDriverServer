@@ -2,50 +2,48 @@
 // Created by andrew on 2/22/17.
 //
 
+#include "Logger.h"
 #include "Level.h"
 
 Level::Level(Engine* engine) {
-    name_ = "BasicLevel";
+    name_ = "DummyLevel";
     engine_ = engine;
+}
+
+void Level::Start()
+{
+    world_ = new b2World(b2Vec2(0, 0));
 
     /* constructs empty physics box around level */
-    PhysicsObject* bottom = new PhysicsObject(new Box(1000.0, 1.0, false), engine_, this);
-    bottom->Spawn(&world, b2Vec2(0, 250));
-    AddObject(bottom);
+    auto bottomWall = new PhysicsObject(new Box(1000.0, 1.0, false), engine_, this);
+    bottomWall->Spawn(world_, b2Vec2(0, 250));
+    AddObject(bottomWall);
 
-    PhysicsObject* top = new PhysicsObject(new Box(1000.0, 1.0, false), engine_, this);
-    top->Spawn(&world, b2Vec2(0, 0));
-    AddObject(top);
+    auto topWall = new PhysicsObject(new Box(1000.0, 1.0, false), engine_, this);
+    topWall->Spawn(world_, b2Vec2(0, 0));
+    AddObject(topWall);
 
-    PhysicsObject* left = new PhysicsObject(new Box(1.0, 1000.0, false), engine_, this);
-    left->Spawn(&world, b2Vec2(0, 0));
-    AddObject(left);
+    auto leftWall = new PhysicsObject(new Box(1.0, 1000.0, false), engine_, this);
+    leftWall->Spawn(world_, b2Vec2(0, 0));
+    AddObject(leftWall);
 
-    PhysicsObject* right = new PhysicsObject(new Box(1.0, 1000.0, false), engine_, this);
-    right->Spawn(&world, b2Vec2(400, 0));
-    AddObject(right);
-
-    /*Just for fun*/
-    for(int i = 0; i < 5; i ++) {
-        for(int j = 0; j < 5; j ++)
-        {
-            PhysicsObject *box = new PhysicsObject(new Box(7.0, 7.0, true), engine_, this);
-            box->Spawn(&world, b2Vec2(50 + 20 * i, 50 + 20 * j));
-            AddObject(box);
-        }
-    }
+    auto rightWall = new PhysicsObject(new Box(1.0, 1000.0, false), engine_, this);
+    rightWall->Spawn(world_, b2Vec2(400, 0));
+    AddObject(rightWall);
 }
 
 void Level::Step(double deltaTime) {
-    for(auto player = players_.begin(); player != players_.end(); player++){
-        (*player)->Step(deltaTime);
+    for (auto player : players_)
+    {
+        player->Step(deltaTime);
     }
 
-    for(auto object = objects_.begin(); object != objects_.end(); object++){
-        (*object)->Step(deltaTime);
+    for (auto object : objects_)
+    {
+        object->Step(deltaTime);
     }
 
-    world.Step(deltaTime, 3, 3);
+    world_->Step(deltaTime, 3, 3);
 }
 
 
@@ -56,9 +54,10 @@ void Level::ToJson(rapidjson::Document &json) const {
     json.AddMember("n", Value().SetString(name_, json.GetAllocator()), json.GetAllocator());
 
     Value objects(kArrayType);
-    for(auto iter = objects_.begin(); iter != objects_.end(); iter++) {
+    for (auto object : objects_)
+    {
         Document objectJson(kObjectType, &json.GetAllocator());
-        (*iter)->ToJson(objectJson);
+        object->ToJson(objectJson);
         objects.PushBack(objectJson, json.GetAllocator());
     }
 
@@ -66,15 +65,34 @@ void Level::ToJson(rapidjson::Document &json) const {
     json.AddMember("o", objects, json.GetAllocator());
 }
 
-void Level::AddPlayer(Player *player) {
+bool Level::AddPlayer(Player *player) {
+    if(players_.size() == maxPlayers_) {
+        return false;
+    }
+
     players_.push_back(player);
-    player->Spawn(&world);
+    player->Spawn(world_);
+    return true;
 }
 
 std::vector<Player *> Level::GetPlayers() {
     return players_;
 }
 
-void Level::AddObject(Object *object) {
+bool Level::AddObject(Object *object) {
+    if(objects_.size() == maxObjects_) {
+        return false;
+    }
+
     objects_.push_back(object);
+    return true;
+}
+
+Level::~Level()
+{
+    for(auto *obj : objects_) {
+        delete obj;
+    }
+
+    delete world_;
 }

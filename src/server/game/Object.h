@@ -34,4 +34,6 @@ public:
     virtual void Step(double deltaTime) = 0;
 
     virtual void ToJson(rapidjson::Document &json) const;
+
+    virtual ~Object();
 };

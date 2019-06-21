@@ -44,7 +44,7 @@ void CarBody::Spawn(b2World *world, b2Vec2 position)
     float frontTireMaxLateralImpulse = 8.5;
 
     //back left tire
-    CarTire *tire = new CarTire();
+    auto *tire = new CarTire();
     tire->Spawn(world, position);
     tire->SetCharacteristics(maxForwardSpeed, maxBackwardSpeed, backTireMaxDriveForce, backTireMaxLateralImpulse);
     jointDef.bodyB = tire->body_;
@@ -84,10 +84,14 @@ void CarBody::Spawn(b2World *world, b2Vec2 position)
     bodies_.push_back(tire->body_);
 }
 
-void CarBody::Destroy(b2World *world)
+void CarBody::Destroy()
 {
-    for (int i = 0; i < tires_.size(); i++)
-        delete tires_[i];
+    for (auto tire : tires_)
+    {
+        delete tire;
+    }
+
+    body_->GetWorld()->DestroyBody(body_);
 }
 
 void CarBody::SetControlState(int controlState)
@@ -97,14 +101,14 @@ void CarBody::SetControlState(int controlState)
 
 void CarBody::Step(double deltaTime)
 {
-    for (int i = 0; i < tires_.size(); i++)
+    for (auto tire : tires_)
     {
-        tires_[i]->UpdateFriction();
+        tire->UpdateFriction();
     }
 
-    for (int i = 0; i < tires_.size(); i++)
+    for (auto tire : tires_)
     {
-        tires_[i]->UpdateDrive(controlState_);
+        tire->UpdateDrive(controlState_);
     }
 
     //control steering
@@ -129,5 +133,10 @@ void CarBody::Step(double deltaTime)
     float newAngle = angleNow + angleToTurn;
     flJoint_->SetLimits(newAngle, newAngle);
     frJoint_->SetLimits(newAngle, newAngle);
+}
+
+CarBody::~CarBody()
+{
+    Destroy();
 }
 

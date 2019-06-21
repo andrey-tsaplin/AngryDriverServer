@@ -20,24 +20,31 @@ void Box::Spawn(b2World *world, b2Vec2 position)
 
     b2Body *boxBody = world->CreateBody(&boxDef);
 
-    b2PolygonShape *boxShape = new b2PolygonShape();
+    auto boxShape = new b2PolygonShape();
     boxShape->SetAsBox(width_ / 2, height_ / 2);
 
-    b2FixtureDef *boxFixture = new b2FixtureDef();
+    auto *boxFixture = new b2FixtureDef();
     boxFixture->shape = boxShape;
     boxFixture->density = DEFAULT_DENSITY;
     boxFixture->restitution = DEFAULT_RESTITUTION;
     boxFixture->friction = DEFAULT_FRICTION;
     boxBody->CreateFixture(boxFixture);
 
+    delete boxShape;
+    delete boxFixture;
+
     bodies_.push_back(boxBody);
 }
 
-void Box::Destroy(b2World *world)
-
+void Box::Destroy()
 {
-    for (auto iter = bodies_.begin(); iter != bodies_.end(); iter++)
+    for (auto body : bodies_)
     {
-        world->DestroyBody((*iter));
+        body->GetWorld()->DestroyBody(body);
     }
+}
+
+Box::~Box()
+{
+    Destroy();
 }

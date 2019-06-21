@@ -20,9 +20,9 @@ void PhysicsObject::Spawn(b2World *world, b2Vec2 position)
     model_->Spawn(world, position);
 }
 
-void PhysicsObject::Destroy(b2World *world)
+void PhysicsObject::Destroy()
 {
-    model_->Destroy(world);
+    model_->Destroy();
 }
 
 void PhysicsObject::ToJson(rapidjson::Document &json) const
@@ -40,4 +40,9 @@ void PhysicsObject::ToJson(rapidjson::Document &json) const
 Model *PhysicsObject::GetModel()
 {
     return model_;
+}
+
+PhysicsObject::~PhysicsObject()
+{
+    Destroy();
 }

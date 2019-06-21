@@ -6,14 +6,14 @@
 #include <stdexcept>
 #include "WSServer.h"
 #include "Client.h"
-#include "../utils/Logger.h"
 
-WSServer::WSServer(int port, Engine *engine)
+WSServer::WSServer() {}
+
+void WSServer::Listen(int port, Engine *engine)
 {
     engine_ = engine;
 
-    struct lws_context_creation_info info;
-    memset(&info, 0, sizeof info);
+    struct lws_context_creation_info info {};
     info.port = port;
     info.iface = NULL;
     info.protocols = protocols;
@@ -26,43 +26,40 @@ WSServer::WSServer(int port, Engine *engine)
     info.gid = -1;
     info.uid = -1;
     info.user = this;
-
     context_ = lws_create_context(&info);
-    if (context_== NULL)
+
+    if (context_ == NULL)
     {
         Logger::Error("libwebsocket init failed");
         throw std::runtime_error("libwebsocket init failed");
-    } else
+    }
+    else
     {
-        Logger::Warning("[WSServer] context created.");
+        Logger::Warning("[WSServer] Listening.");
     }
 }
 
-
-int WSServer::httpProtocolCallback(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
+int WSServer::HttpProtocolCallback(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
 {
     return 0;
 }
 
-int WSServer::gameProtocolCallback(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
+int WSServer::GameProtocolCallback(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
 {
 
-    struct session_data_game *session_data =
-            (struct session_data_game *) user;
-
+    auto *sessionData = (struct SessionData *) user;
     WSClient *client;
 
     switch (reason)
     {
-
         case LWS_CALLBACK_ESTABLISHED:
-            session_data->ws_client = new WSClient(wsi);
-            engine_->AddClient(session_data->ws_client);
+            sessionData->wsClient = new WSClient(wsi);
+            engine_->AddClient(sessionData->wsClient);
             break;
 
         case LWS_CALLBACK_SERVER_WRITEABLE:
         {
-            client = session_data->ws_client;
+            client = sessionData->wsClient;
             MessageQueue &queue = client->GetServerMessageQueue();
 
             MessageQueue::const_iterator iter = queue.begin();
@@ -74,17 +71,18 @@ int WSServer::gameProtocolCallback(struct lws *wsi, enum lws_callback_reasons re
 
                 if (written < size)
                 {
-                    lwsl_err("ERROR %d writing to di socket\n", written);
+                    lwsl_err("ERROR %d writing to socket\n", written);
                     return -1;
                 }
 
                 iter = queue.erase(iter);
             }
-        }
+
             break;
+        }
 
         case LWS_CALLBACK_RECEIVE:
-            client = session_data->ws_client;
+            client = sessionData->wsClient;
             client->ProcessClientMessage(std::string((char *) in, len));
             break;
 

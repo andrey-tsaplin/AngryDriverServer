@@ -5,6 +5,7 @@
 #pragma once
 
 #include "libwebsockets.h"
+#include "Logger.h"
 #include "WSClient.h"
 #include "../game/Engine.h"
 
@@ -14,31 +15,35 @@ class WSServer
     Engine *engine_;
 
 public:
-    WSServer(int port, Engine *engine);
+    WSServer();
+
+    void Listen(int port, Engine *engine);
 
     void Service();
 
-    int gameProtocolCallback(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len);
+    /*Callbacks called by libwebsocket*/
+    int GameProtocolCallback(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len);
 
-    int httpProtocolCallback(lws *wsi, lws_callback_reasons reason, void *user, void *in, size_t len);
+    int HttpProtocolCallback(lws *wsi, lws_callback_reasons reason, void *user, void *in, size_t len);
+    /*Callbacks end*/
 };
 
-struct session_data_game
+struct SessionData
 {
-    WSClient *ws_client;
+    WSClient *wsClient;
 };
 
-static int gameProtocolCallbackWrapper(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in,
+static int GameProtocolCallbackWrapper(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in,
                                        size_t len)
 {
-    return static_cast<WSServer *> (lws_context_user(lws_get_context(wsi)))->gameProtocolCallback(wsi, reason, user, in,
+    return static_cast<WSServer *> (lws_context_user(lws_get_context(wsi)))->GameProtocolCallback(wsi, reason, user, in,
                                                                                                   len);
 }
 
-static int httpProtocolCallbackWrapper(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in,
+static int HttpProtocolCallbackWrapper(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in,
                                        size_t len)
 {
-    return static_cast<WSServer *> (lws_context_user(lws_get_context(wsi)))->httpProtocolCallback(wsi, reason, user, in,
+    return static_cast<WSServer *> (lws_context_user(lws_get_context(wsi)))->HttpProtocolCallback(wsi, reason, user, in,
                                                                                                   len);
 }
 
@@ -59,14 +64,14 @@ const struct lws_extension exts[] = {
 static struct lws_protocols protocols[] = {
         {
                 "http-only",                /* name */
-                      httpProtocolCallbackWrapper,/* callback */
+                      HttpProtocolCallbackWrapper,/* callback */
                             0,                          /* per_session_data_size */
                                0,                          /* max frame size / rx buffer */
         },
         {
                 "ad-game-protocol",                   /* name */
-                      gameProtocolCallbackWrapper,          /* callback */
-                            sizeof(struct session_data_game),      /* per_session_data_size */
+                      GameProtocolCallbackWrapper,          /* callback */
+                            sizeof(struct SessionData),      /* per_session_data_size */
                 8000,                                 /* max frame size / rx buffer */
         },
         {       NULL, NULL, 0, 0} /* terminator */

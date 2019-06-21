@@ -15,10 +15,10 @@ void Model::ToJson(rapidjson::Document &json) const
     using namespace rapidjson;
     Value shapes(kArrayType);
 
-    for (auto body_iter = bodies_.begin(); body_iter != bodies_.end(); ++body_iter)
+    for (auto body : bodies_)
     {
-        b2Transform transform = (*body_iter)->GetTransform();
-        b2Fixture *fixture = (*body_iter)->GetFixtureList();
+        b2Transform transform = body->GetTransform();
+        b2Fixture *fixture = body->GetFixtureList();
         for (; fixture; fixture = fixture->GetNext())
         {
             Value shapeJson(kObjectType);
@@ -40,8 +40,8 @@ void Model::ToJson(rapidjson::Document &json) const
                 for (int i = 0; i < polygonShape->m_count; i++)
                 {
                     b2Vec2 pos = b2Mul(transform, polygonShape->GetVertex(i));
-                    vertices.PushBack(trunc(pos.x * 10), json.GetAllocator());
-                    vertices.PushBack(trunc(pos.y * 10), json.GetAllocator());
+                    vertices.PushBack(truncf(pos.x * 10), json.GetAllocator());
+                    vertices.PushBack(truncf(pos.y * 10), json.GetAllocator());
                 }
 
                 /*JSON API: v stands for poly shape vertices array*/

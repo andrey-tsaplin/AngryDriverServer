@@ -5,7 +5,7 @@
 #pragma once
 
 #include "../transport/Client.h"
-#include "PhysicsObject.h"
+#include "physics/PhysicsObject.h"
 #include "physics/Box.h"
 #include "physics/car/CarBody.h"
 

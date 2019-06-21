@@ -24,7 +24,7 @@ void CarTire::Spawn(b2World *world, b2Vec2 position)
     body_->SetUserData(this);
 }
 
-void CarTire::Destroy(b2World *world)
+void CarTire::Destroy()
 {
     body_->GetWorld()->DestroyBody(body_);
 }
@@ -120,4 +120,9 @@ void CarTire::UpdateTurn(int controlState)
         default:;//nothing
     }
     body_->ApplyTorque(desiredTorque, true);
+}
+
+CarTire::~CarTire()
+{
+    Destroy();
 }

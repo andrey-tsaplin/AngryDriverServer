@@ -4,26 +4,36 @@
 
 #pragma once
 
-#include "../transport/Client.h"
 #include "Level.h"
+#include "Logger.h"
+#include "CliParams.h"
+#include "GameLoopCounter.h"
+#include "../transport/Client.h"
+
+class WSServer;
 
 class Engine
 {
 protected:
-    bool debug_ = false;
-    Level *currentLevel_;
-
+    CliParameters parameters_;
+    WSServer* server_;
+    GameLoopCounter counter_;
+    Level *currentLevel_ = nullptr;
     float timeToReplicate_ = 0;
-    float replicationInterval_ = 0;
+    bool isRunning_ = false;
 
 public:
-    Engine(float replicationInterval);
+    explicit Engine(const CliParameters &parameters);
 
-    bool IsDebug();
+    void Initialize();
 
-    void AddClient(Client *client);
+    void GameLoop();
 
-    void Step(double deltaTime);
+    void ChangeLevel(Level* level);
+
+    void StopLoop();
+
+    bool AddClient(Client *client);
 
     void ReplicateState();
 };

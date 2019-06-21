@@ -34,3 +34,6 @@ void Object::ToJson(rapidjson::Document &json) const
     /*JSON API: t stands for object's type*/
     json.AddMember("t", Value().SetInt(type_), json.GetAllocator());
 }
+
+Object::~Object()
+{ }

@@ -4,9 +4,9 @@
 
 #pragma once
 
+#include <vector>
 #include <Box2D/Common/b2Math.h>
 #include <Box2D/Dynamics/b2World.h>
-#include <vector>
 #include <rapidjson/document.h>
 
 class Model
@@ -16,11 +16,11 @@ protected:
     std::vector<b2Joint *> joints_;
 
 public:
-    Model() {};
+    Model() = default;
 
     virtual void Spawn(b2World *world, b2Vec2 position) = 0;
 
-    virtual void Destroy(b2World *world) = 0;
+    virtual void Destroy() = 0;
 
     virtual void Step(double deltaTime) {};
 

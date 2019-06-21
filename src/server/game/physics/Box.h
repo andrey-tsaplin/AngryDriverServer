@@ -9,9 +9,9 @@
 #include "Box2D/Dynamics/b2Body.h"
 #include "Model.h"
 
-static const int DEFAULT_DENSITY = 1;
-static const int DEFAULT_RESTITUTION = 0.2;
-static const int DEFAULT_FRICTION = 0.3;
+static const float DEFAULT_DENSITY = 1;
+static const float DEFAULT_RESTITUTION = 0.2;
+static const float DEFAULT_FRICTION = 0.3;
 
 class Box : public Model
 {
@@ -25,5 +25,7 @@ public:
 
     void Spawn(b2World *world, b2Vec2 position) override;
 
-    void Destroy(b2World *world) override;
+    void Destroy() override;
+
+    ~Box();
 };

@@ -42,7 +42,7 @@ public:
 
     void Spawn(b2World *world, b2Vec2 position) override;
 
-    void Destroy(b2World *world) override;
+    void Destroy() override;
 
     void SetCharacteristics(float maxForwardSpeed, float maxBackwardSpeed, float maxDriveForce, float maxLateralImpulse);
 
@@ -57,6 +57,8 @@ public:
     void UpdateDrive(int controlState);
 
     void UpdateTurn(int controlState);
+
+    ~CarTire();
 };
 
 

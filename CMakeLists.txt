@@ -18,11 +18,14 @@ include_directories(src/server/transport)
 add_definitions(-DRAPIDJSON_HAS_STDSTRING=1)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/rapidjson/include)
 
+include_directories(src/utils)
 
 set(SOURCE_FILES
         src/main.cpp
-        src/server/utils/Logger.cpp
-        src/server/utils/Logger.h
+        src/utils/Logger.cpp
+        src/utils/Logger.h
+        src/utils/CliParams.cpp
+        src/utils/CliParams.h
         src/server/transport/WSServer.cpp
         src/server/transport/WSServer.h
         src/server/transport/Client.h
@@ -31,8 +34,8 @@ set(SOURCE_FILES
         src/server/game/Engine.h
         src/server/game/Level.cpp
         src/server/game/Level.h
-        src/server/game/PhysicsObject.cpp
-        src/server/game/PhysicsObject.h
+        src/server/game/physics/PhysicsObject.cpp
+        src/server/game/physics/PhysicsObject.h
         src/server/game/physics/Model.h
         src/server/game/physics/Model.cpp
         src/server/transport/WSClient.h
@@ -44,7 +47,9 @@ set(SOURCE_FILES
         src/server/game/physics/car/CarTire.h
         src/server/game/physics/car/CarTire.cpp
         src/server/game/physics/car/CarBody.h
-        src/server/game/physics/car/CarBody.cpp)
+        src/server/game/physics/car/CarBody.cpp
+        src/server/game/levels/TestLevel.h
+        src/server/game/levels/TestLevel.cpp )
 
 add_executable(angryDriverServer ${SOURCE_FILES})
 target_link_libraries(angryDriverServer websockets Box2D)

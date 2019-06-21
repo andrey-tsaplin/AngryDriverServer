@@ -5,11 +5,12 @@
 #pragma once
 
 #include <vector>
-#include "Object.h"
+#include "Model.h"
+#include "../Object.h"
 #include <Box2D/Dynamics/b2Body.h>
 #include <Box2D/Common/b2Math.h>
 #include <Box2D/Dynamics/b2World.h>
-#include "physics/Model.h"
+
 
 class PhysicsObject : public Object
 {
@@ -21,12 +22,14 @@ public:
 
 	Model *GetModel();
 
-	virtual void Step(double deltaTime);
+    void Step(double deltaTime) override;
 
-	virtual void ToJson(rapidjson::Document &json) const;
+    void ToJson(rapidjson::Document &json) const override;
 
 	virtual void Spawn(b2World *world, b2Vec2 position);
 
-	virtual void Destroy(b2World *world);
+	virtual void Destroy();
+
+    ~PhysicsObject() override;
 
 };

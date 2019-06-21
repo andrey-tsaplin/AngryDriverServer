@@ -1,21 +1,13 @@
 //
-// Created by andrew on 3/1/17.
+// Created by andrew on 6/22/19.
 //
 
-#include "server/utils/Logger.h"
+#include "CliParams.h"
+#include "Logger.h"
 
-struct CliParameters
+CliParameters CliParams::ReadCLIParameters(int argc, char **argv)
 {
-    int fps = 60;
-    int netRate = 25;
-    int port = 8080;
-    bool printHelp = false;
-    bool verbose = false;
-};
-
-CliParameters ReadCLIParameters(int argc, char **argv)
-{
-    CliParameters parameters;
+    auto parameters = CliParameters();
 
     for (int i = 0; i < argc; ++i)
     {
@@ -44,7 +36,7 @@ CliParameters ReadCLIParameters(int argc, char **argv)
     return parameters;
 }
 
-void PrintHelp()
+void CliParams::PrintHelp()
 {
     Logger::Log(Logger::ERROR, "Usage: \n"
                                "angryDriverServer [OPTIONS]\n"
@@ -52,6 +44,7 @@ void PrintHelp()
 
                                "Supported OPTIONS are:\n"
                                "  -f, --fps          run server at specific FPS, default is 60\n"
+                               "  -n, --netRate      network replication rate\n"
                                "  -p, --port         run on specific port, default is 8080\n"
                                "  -v, --verbose      verbose logging\n"
                                "  -h, --help         print this help\n"
