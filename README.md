@@ -26,5 +26,5 @@ Use --help options to see available options
 ![Demo](clientTest/demo.gif)
 
 Client side is just dummy for testing. Open clientTest/index.html in your browser to try. 
-Use WASD to control your car.
+Use Arrow keys to control your car.
 
