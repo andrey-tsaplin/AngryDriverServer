@@ -1,0 +1,10 @@
+[submodule "rapidjson"]
+	path = rapidjson
+	url = git@github.com:miloyip/rapidjson.git
+[submodule "Box2D"]
+	path = Box2D
+	url = git@github.com:erincatto/Box2D.git
+[submodule "libwebsockets"]
+	path = libwebsockets
+	url = https://github.com/warmcat/libwebsockets
+	branch = v2.1-stable
