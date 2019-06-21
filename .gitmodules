@@ -6,5 +6,5 @@
 	url = git@github.com:erincatto/Box2D.git
 [submodule "libwebsockets"]
 	path = libwebsockets
-	url = https://github.com/warmcat/libwebsockets
+	url = git@github.com:warmcat/libwebsockets.git
 	branch = v2.1-stable

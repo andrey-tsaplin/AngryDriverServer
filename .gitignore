@@ -21,9 +21,6 @@ Makefile
 .idea/**/shelf
 .idea/**/contentModel.xml
 
-Box2D
-rapidjson
-libwebsockets
 angryDriverServer
 angryDriverServer.cbp
 server.cbp
